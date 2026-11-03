@@ -1,0 +1,82 @@
+export const DEMO_SETTINGS = {
+  id: 1,
+  brand_name: 'Wando Hair Ventures',
+  logo_url: '',
+  announcement: 'Soft glam, bold confidence — enjoy 15% off selected units this week',
+  address: '14 Rosewood Lane, Lagos, Nigeria',
+  whatsapp_number: '2348030000000',
+  socials: {
+    instagram: 'https://instagram.com/wandohairventures',
+    facebook: 'https://facebook.com/wandohairventures',
+    telegram: 'https://t.me/wandohairventures',
+    tiktok: 'https://tiktok.com/@wandohairventures',
+    whatsapp: 'https://wa.me/2348030000000',
+  },
+}
+
+const photo = (id, width = 900) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=85`
+
+export const DEMO_PRODUCTS = [
+  {
+    id: 'demo-cloud-01',
+    name: 'Cloud Nine Body Wave',
+    category: 'Signature collection',
+    description: 'A soft, full body-wave unit with a natural-looking middle part and effortless movement. Designed for weekday polish and weekend drama.',
+    price: 185000,
+    length: '22 inches',
+    texture: 'Body wave',
+    cap_size: 'Medium / adjustable',
+    images: [photo('photo-1529139574466-a303027c1d8b'), photo('photo-1515886657613-9f3515b0c78f')],
+    featured: true,
+    rating: 4.9,
+    review_count: 31,
+  },
+  {
+    id: 'demo-silk-02',
+    name: 'Silk Press Muse',
+    category: 'Everyday edit',
+    description: 'Long, sleek and quietly magnetic. This straight unit gives you the clean-line finish of a silk press with the convenience of a ready-to-wear wig.',
+    price: 165000,
+    length: '20 inches',
+    texture: 'Silky straight',
+    cap_size: 'Small / medium',
+    images: [photo('photo-1580618672591-eb180b1a973f'), photo('photo-1525507119028-ed4c629a60a3')],
+    featured: true,
+    rating: 4.8,
+    review_count: 18,
+  },
+  {
+    id: 'demo-cocoa-03',
+    name: 'Cocoa Melt Closure',
+    category: 'Soft statement',
+    description: 'Warm chocolate tones, a feathered finish, and a breathable closure that blends beautifully for a polished but believable look.',
+    price: 145000,
+    length: '18 inches',
+    texture: 'Loose curl',
+    cap_size: 'Medium / adjustable',
+    images: [photo('photo-1595476108010-b4d1f102b1b1'), photo('photo-1616683693504-3ea7e9ad6fec')],
+    featured: false,
+    rating: 4.7,
+    review_count: 12,
+  },
+  {
+    id: 'demo-rose-04',
+    name: 'Rosewater Frontal',
+    category: 'New arrival',
+    description: 'A romantic, voluminous frontal with a soft rosy tint. Made for the entrance, the close-up, and every camera flash in between.',
+    price: 220000,
+    length: '24 inches',
+    texture: 'Loose wave',
+    cap_size: 'Medium / adjustable',
+    images: [photo('photo-1524504388940-b1c1722653e1'), photo('photo-1506794778202-cad84cf45f1d')],
+    featured: true,
+    rating: 5,
+    review_count: 9,
+  },
+]
+
+export const DEMO_REVIEWS = [
+  { id: 'review-1', name: 'Amara O.', rating: 5, comment: 'The texture is gorgeous and the packaging felt like opening a gift. I will be back for the frontal.', created_at: '2026-09-12' },
+  { id: 'review-2', name: 'Teni A.', rating: 5, comment: 'My unit arrived soft, full and exactly like the photos. Wando understood the assignment.', created_at: '2026-08-28' },
+  { id: 'review-3', name: 'Lola K.', rating: 4, comment: 'Beautiful hair and very helpful WhatsApp support. The adjustable cap is a lifesaver.', created_at: '2026-08-04' },
+]

@@ -1,0 +1,1 @@
+{"routes":[{"path":"/","title":"Wando Hair Ventures"},{"path":"/product/:id","title":"Wig details"},{"path":"/admin","title":"Admin dashboard"}]}
