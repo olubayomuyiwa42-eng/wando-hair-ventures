@@ -285,30 +285,80 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true
+    let authEventVersion = 0
+
+    if (!supabase) {
+      setLoading(false)
+      return () => { mounted = false }
+    }
+
+    // Subscribe before restoring the saved session. This prevents a late
+    // getSession() result from overwriting a newer sign-in event.
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      authEventVersion += 1
+      const eventVersion = authEventVersion
+
+      if (!newSession) {
+        setSession(null)
+        return
+      }
+
+      // Defer the Supabase query out of the auth callback to avoid blocking
+      // the auth client's internal event processing.
+      window.setTimeout(async () => {
+        const { data: adminRow, error } = await supabase
+          .from('admin_users')
+          .select('id')
+          .eq('id', newSession.user.id)
+          .maybeSingle()
+
+        if (!mounted || eventVersion !== authEventVersion) return
+        setSession(!error && adminRow ? newSession : null)
+      }, 0)
+    })
+
     const load = async () => {
-      if (!supabase) { setLoading(false); return }
       const [{ data: settingsRow }, { data: productRows }, { data: reviewRows }, { data: authData }] = await Promise.all([
         supabase.from('site_settings').select('*').eq('id', 1).maybeSingle(),
         supabase.from('products').select('*').order('created_at', { ascending: false }),
         supabase.from('reviews').select('*').order('created_at', { ascending: false }),
         supabase.auth.getSession(),
       ])
+
       if (!mounted) return
       if (settingsRow) setSettings(normalizeSettings(settingsRow))
       if (productRows) setProducts(productRows)
-      if (reviewRows) { setReviews(reviewRows.filter((review) => review.approved)); setPendingReviews(reviewRows.filter((review) => !review.approved)) }
-      let activeSession = authData?.session || null
-      if (activeSession) {
-        const { data: adminRow } = await supabase.from('admin_users').select('id').eq('id', activeSession.user.id).maybeSingle()
-        if (!adminRow) activeSession = null
+      if (reviewRows) {
+        setReviews(reviewRows.filter((review) => review.approved))
+        setPendingReviews(reviewRows.filter((review) => !review.approved))
       }
-      setSession(activeSession)
-      setLoading(false)
+
+      // Only apply the restored session if no auth event arrived while the
+      // initial data was loading; otherwise that newer event takes precedence.
+      if (authEventVersion === 0) {
+        let activeSession = authData?.session || null
+        if (activeSession) {
+          const { data: adminRow, error } = await supabase
+            .from('admin_users')
+            .select('id')
+            .eq('id', activeSession.user.id)
+            .maybeSingle()
+          if (error || !adminRow) activeSession = null
+        }
+        if (mounted && authEventVersion === 0) setSession(activeSession)
+      }
+      if (mounted) setLoading(false)
     }
-    load()
-    if (!supabase) return () => { mounted = false }
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => setSession(newSession))
-    return () => { mounted = false; listener.subscription.unsubscribe() }
+
+    load().catch((error) => {
+      console.error('Unable to initialize Wando storefront:', error)
+      if (mounted) setLoading(false)
+    })
+
+    return () => {
+      mounted = false
+      listener.subscription.unsubscribe()
+    }
   }, [])
 
   const selectedProduct = useMemo(() => products.find((product) => product.id === route.id), [products, route.id])
